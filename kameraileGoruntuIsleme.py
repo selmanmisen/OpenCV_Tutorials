@@ -1,28 +1,27 @@
-import cv2
+import cv2 as cv
 import numpy as np
 
-cap = cv2.VideoCapture(0)
+cap = cv.VideoCapture(0)
+
+lower_ = np.array([100,50,50])
+upper_ = np.array([130,255,255])
+
 
 while True:
-    ret, frame = cap.read()
-    if not ret:
+    rep,frame = cap.read()
+    hsv = cv.cvtColor(frame,cv.COLOR_BGR2HSV)
+    mask = cv.inRange(hsv,lower_,upper_)
+    filtered_color=cv.bitwise_and(frame,frame,mask=mask)
+
+    cv.imshow('frame',frame)
+    cv.imshow('hsv',hsv)
+    cv.imshow('masked',mask) 
+    cv.imshow('filtered',filtered_color) 
+
+
+    if cv.waitKey(1) & 0xFF == ord('q'):
         break
-
-    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-
-    lower_red = np.array([0, 120, 70]) 
-    upper_red = np.array([10, 255, 255])  
-
-    mask = cv2.inRange(hsv, lower_red, upper_red)
-
-    result = cv2.bitwise_and(frame, frame, mask=mask)
-
-    cv2.imshow('Original Frame', frame)
-    cv2.imshow('Mask', mask)
-    cv2.imshow('Detected Color', result)
-
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+    
 
 cap.release()
-cv2.destroyAllWindows()
+cv.destroyAllWindows()
